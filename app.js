@@ -61,18 +61,31 @@ app.get("/api/todos/:id", (req, res) => {
 
 app.put("/api/todos/:id", (req, res) => {
   Todo.updateOne({ _id: req.params.id }, req.body)
-    .then(updatedTodo => {
-      res.send(updatedTodo);
+    .then(() => {
+      Todo.findById(req.params.id)
+        .then(foundTodo => {
+          res.send(foundTodo);
+        })
+        .catch(error => {
+          res.status(500).send(error);
+        });
     })
     .catch(error => {
       res.status(500).send(error);
     });
 });
 
+// mark all as complete
 app.patch("/api/todos", (req, res) => {
-  Todo.update({}, req.body.completed)
-    .then(updatedTodos => {
-      res.send(updatedTodos);
+  Todo.updateMany({ completed: false }, req.body)
+    .then(() => {
+      Todo.find()
+        .then(foundTodos => {
+          res.send(foundTodos);
+        })
+        .catch(error => {
+          res.status(500).send(error);
+        });
     })
     .catch(error => {
       res.status(500).send(error);
@@ -80,16 +93,35 @@ app.patch("/api/todos", (req, res) => {
 });
 
 app.patch("/api/todos/:id", (req, res) => {
-  Todo.updateOne({ _id: req.params.id }, req.body.completed)
-    .then(updatedTodo => {
-      res.send(updatedTodo);
+  Todo.updateOne({ _id: req.params.id }, req.body)
+    .then(() => {
+      Todo.findById(req.params.id)
+        .then(foundTodo => {
+          res.send(foundTodo);
+        })
+        .catch(error => {
+          res.status(500).send(error);
+        });
     })
     .catch(error => {
       res.status(500).send(error);
     });
 });
 
-app.delete("/api/todos/:id", (req, res) => {});
+app.delete("/api/todos/:id", (req, res) => {
+  Todo.findById(req.params.id).then(foundTodo => {
+    Todo.deleteOne({ _id: req.params.id })
+      .then(() => {
+        res.send(foundTodo);
+      })
+      .catch(error => {
+        res.status(500).send(error);
+      })
+      .catch(error => {
+        res.status(500).send(error);
+      });
+  });
+});
 
 app.listen(3000, function() {
   console.log("Express running on http://localhost:3000/.");
