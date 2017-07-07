@@ -49,11 +49,45 @@ app.post("/api/todos", (req, res) => {
     });
 });
 
-app.get("/api/todos/:id", (req, res) => {});
+app.get("/api/todos/:id", (req, res) => {
+  Todo.findById(req.params.id)
+    .then(foundTodo => {
+      res.send(foundTodo);
+    })
+    .catch(error => {
+      res.status(500).send(error);
+    });
+});
 
-app.put("/api/todos/:id", (req, res) => {});
+app.put("/api/todos/:id", (req, res) => {
+  Todo.updateOne({ _id: req.params.id }, req.body)
+    .then(updatedTodo => {
+      res.send(updatedTodo);
+    })
+    .catch(error => {
+      res.status(500).send(error);
+    });
+});
 
-app.path("/api/todos/:id", (req, res) => {});
+app.patch("/api/todos", (req, res) => {
+  Todo.update({}, req.body.completed)
+    .then(updatedTodos => {
+      res.send(updatedTodos);
+    })
+    .catch(error => {
+      res.status(500).send(error);
+    });
+});
+
+app.patch("/api/todos/:id", (req, res) => {
+  Todo.updateOne({ _id: req.params.id }, req.body.completed)
+    .then(updatedTodo => {
+      res.send(updatedTodo);
+    })
+    .catch(error => {
+      res.status(500).send(error);
+    });
+});
 
 app.delete("/api/todos/:id", (req, res) => {});
 
